@@ -1,0 +1,102 @@
+server:
+  port: 8080
+  forward-headers-strategy: framework
+
+spring:
+  application:
+    name: api-gateway
+  security:
+    user:
+      name: admin
+      password: admin
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        # DOCS ROUTES FIRST
+        - id: USER-DOCS
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/users/v3/api-docs
+          filters:
+            - SetPath=/v3/api-docs
+
+        - id: PRODUCT-DOCS
+          uri: lb://PRODUCT-SERVICE
+          predicates:
+            - Path=/products/v3/api-docs
+          filters:
+            - SetPath=/v3/api-docs
+
+        - id: ORDER-DOCS
+          uri: lb://ORDER-SERVICE
+          predicates:
+            - Path=/orders/v3/api-docs
+          filters:
+            - SetPath=/v3/api-docs
+
+        - id: CART-DOCS
+          uri: lb://CART-SERVICE
+          predicates:
+            - Path=/cart/v3/api-docs
+          filters:
+            - SetPath=/v3/api-docs
+
+        - id: PAYMENT-DOCS
+          uri: lb://PAYMENT-SERVICE
+          predicates:
+            - Path=/payments/v3/api-docs
+          filters:
+            - SetPath=/v3/api-docs
+
+        # SERVICE ROUTES AFTER
+        - id: USER-SERVICE
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/users/**
+
+        - id: PRODUCT-SERVICE
+          uri: lb://PRODUCT-SERVICE
+          predicates:
+            - Path=/products/**
+
+        - id: ORDER-SERVICE
+          uri: lb://ORDER-SERVICE
+          predicates:
+            - Path=/orders/**
+
+        - id: CART-SERVICE
+          uri: lb://CART-SERVICE
+          predicates:
+            - Path=/cart/**
+
+        - id: PAYMENT-SERVICE
+          uri: lb://PAYMENT-SERVICE
+          predicates:
+            - Path=/payments/**
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+springdoc:
+  swagger-ui:
+    enabled: true
+    with-credentials: true
+    urls:
+      - name: USER-SERVICE
+        url: /users/v3/api-docs
+      - name: PRODUCT-SERVICE
+        url: /products/v3/api-docs
+      - name: ORDER-SERVICE
+        url: /orders/v3/api-docs
+      - name: CART-SERVICE
+        url: /cart/v3/api-docs
+      - name: PAYMENT-SERVICE
+        url: /payments/v3/api-docs
+  api-docs:
+    enabled: true
+
